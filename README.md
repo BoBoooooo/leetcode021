@@ -1,3 +1,7 @@
+![image.png](https://kmpvt.pfp.ps.netease.com/file/66e5345f7a4c09b4528a9d5aVK0OJNbM01?sign=dNjNbSubY9wWMgZGsV5u0-H_v44=&expire=1726301251&type=image/png)
+
+先接个雨水吧
+
 #【数学题】超级回文数
 
 1. 转 BigInt，从 1 - 100000 构造偶数回文 + 构造奇数回文，再判断平方数是否是回文数，结果转成字符串
@@ -35,14 +39,14 @@
 
 用哈希表 map 存储所有二元组按位与的结果与出现次数，再枚举数组 nums 与 map 所有的键，如果二者位与结果为 0 就累计其次数
 
-#【动态规划】最长有效括号
+#【DP】最长有效括号
 
 - dp 定义：记录以坐标 i 结尾的最长有效括号子串长度
 - 状态转移方程 `dp[i] = 2 + dp[i-1] + dp[i - dp[i-1] -2]` 【最小单元 ()(()) 】
 - 注意判断 `i - dp[i-1] -1` 以及 `i - dp[i-1] -2` 是否越界，越界则表示不存在，直接为 0
 
 
-#【动态规划】最长递增子序列
+#【DP】最长递增子序列
 
 1. 动态规划，`dp[i]` 表示以 nums[i] 结尾的最长递增子序列的长度
 2. 初始化 dp 数组，`dp[i] = 1`，`result = 1`；默认最长为 1
@@ -50,7 +54,7 @@
 4. `result = max(result, dp[i])`
 5. 返回 result
 
-#【动态规划 & 二维 DP】不相交的线 （最长公共子序列）
+#【DP 二维】不相交的线 （最长公共子序列）
 
 1. 动态规划，`dp[i][j]` 表示 nums1 前 i 个元素和 nums2 前 j 个元素的最长公共子序列长度
 2. 初始化 dp 数组，`dp[i][j] = 0`，长度为 num1 + 1, num2 + 1
@@ -63,6 +67,69 @@
 #【并查集】按公因数计算最大组件大小
 
 迷之并查集
+
+1.	初始化并查集：unionfind 对象用于存储每个数或因子的根节点。
+2.	遍历数组 A：对每个数 num，计算它的所有因子，并将 num 与这些因子“合并”到同一个集合中。
+3.	合并操作：union 函数负责将 num 及其因子连在一起。并查集的 find 函数用来查找元素所属的根节点，并带有路径压缩优化。
+4.	统计最大连通分量：遍历数组 A，通过 find 找到每个数所属的连通分量的根节点，记录该连通分量的大小，并找出最大的连通分量。
+
+```js
+/**
+ * @param {number[]} A
+ * @return {number}
+ */
+var largestComponentSize = function(A) {
+  // unionfind 用来记录每个数和因子的连通关系
+  const unionfind = {};
+
+  // 对数组 A 中的每个数进行因子分解，并将它与其因子加入同一个集合
+  for (const num of A) {
+    // 对当前数 num 进行因子分解，i 代表因子
+    for (let i = 2; i <= Math.sqrt(num); i++) {
+      // 如果 i 是 num 的因子，说明 num 可以被 i 整除
+      if (num % i === 0) {
+        // 将 num 的两个因子 i 和 num / i 以及 num 本身加入同一个集合
+        union(i, num / i, num);
+      }
+    }
+  }
+
+  // count 用于统计每个连通分量中的元素个数
+  const count = {};
+  let res = 0;
+
+  // 遍历数组 A，找到每个数所在的连通分量的根节点，并统计每个分量的大小
+  for (const num of A) {
+    const p = find(num); // 找到 num 所在连通分量的根节点
+    if (!count[p]) {
+      count[p] = 0;
+    }
+    count[p] += 1;  // 统计该连通分量的大小
+    res = Math.max(res, count[p]);  // 更新最大连通分量的大小
+  }
+  return res;  // 返回最大连通分量的大小
+
+  // find 函数用于查找元素 i 所在集合的根节点（带路径压缩）
+  function find(i) {
+    // 如果 i 不在 unionfind 中，初始化它的根为自己
+    if (unionfind[i] === undefined) {
+      return (unionfind[i] = i);
+    }
+    // 如果 i 不是根节点，递归查找它的根，并路径压缩
+    return unionfind[i] === i ? i : (unionfind[i] = find(unionfind[i]));
+  }
+
+  // union 函数将 x, y, z 三个元素合并到同一个集合
+  function union(x, y, z) {
+    x = find(x);  // 找到 x 的根节点
+    y = find(y);  // 找到 y 的根节点
+    z = find(z);  // 找到 z 的根节点
+    // 将 x 和 y 的根节点指向 z，将它们合并
+    unionfind[x] = unionfind[y] = z;
+  }
+};
+
+```
 
 #【单调栈】拼接最大数
 
